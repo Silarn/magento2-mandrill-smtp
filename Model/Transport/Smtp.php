@@ -14,10 +14,10 @@ namespace Ebizmarts\MandrillSmtp\Model\Transport;
 use Magento\Framework\Exception\MailException;
 use Magento\Framework\Mail\EmailMessageInterface;
 use Magento\Framework\Phrase;
-use Zend\Mail\Message;
-use Zend\Mail\Transport\SmtpOptions;
+use Laminas\Mail\Message;
+use Laminas\Mail\Transport\SmtpOptions;
 use Ebizmarts\MandrillSmtp\Helper\Data as HelperData;
-use Zend\Mail\Transport\Smtp as SmtpTransport;
+use Laminas\Mail\Transport\Smtp as SmtpTransport;
 
 
 class Smtp extends SmtpTransport
