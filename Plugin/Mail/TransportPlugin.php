@@ -13,7 +13,8 @@ namespace Ebizmarts\MandrillSmtp\Plugin\Mail;
 
 use Closure;
 use Ebizmarts\MandrillSmtp\Helper\Data as HelperData;
-use Magento\Framework\Mail\TransportInterface;
+use Magento\Email\Model\Transport;
+use Symfony\Component\Mailer\Transport\Smtp\Auth\LoginAuthenticator;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Mailer\Mailer;
 use Symfony\Component\Mailer\Transport\Smtp\EsmtpTransport;
@@ -24,30 +25,26 @@ class TransportPlugin
     private $options;
 
     public function __construct(
-        HelperData $helper,
-        SmtpOptions $options
+        HelperData $helper
     )
     {
         $this->helper = $helper;
     }
 
-    public function aroundSendMessage(
-        TransportInterface $subject,
-        Closure $proceed
+    public function aroundGetTransport(
+        Transport $subject,
+        callable $proceed
     )
     {
         if ($this->helper->isEnabled()) {
-            $message = $subject->getMessage();
-            if (!message instanceof Email) {
-                $message = $this->convertToSymfonyEmail($message);
-            }
-            $transport = new EsmtpTransport(HelperData::HOST, HelperData::PORT, true);
+            $transport = new EsmtpTransport(HelperData::HOST, HelperData::PORT, false);
             $transport->setUsername($this->helper->getUsername());
             $transport->setPassword($this->helper->getApiKey());
-            $mailer = new Mailer($transport);
-            $mailer->send($message);
+            $transport->setAuthenticators([new LoginAuthenticator()]);
+            return $transport;
         } else {
-            $proceed();
+            return $proceed();
         }
     }
+
 }
